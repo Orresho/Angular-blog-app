@@ -1,3 +1,6 @@
+import { HeaderComponent } from './header/header.component';
+import { SigninComponent } from './auth/signin.component';
+import { SignupComponent } from './auth/signup.component';
 import { NgModule, ApplicationRef } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpModule } from '@angular/http';
@@ -20,6 +23,9 @@ import { removeNgStyles, createNewHosts } from '@angularclass/hmr';
   declarations: [
     AppComponent,
     HomeComponent,
+    SignupComponent,
+    SigninComponent,
+    HeaderComponent
   ],
   providers: [
     ApiService
