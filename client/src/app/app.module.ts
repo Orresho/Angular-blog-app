@@ -1,3 +1,4 @@
+import { AuthService } from './auth/auth.service';
 import { HeaderComponent } from './header/header.component';
 import { SigninComponent } from './auth/signin.component';
 import { SignupComponent } from './auth/signup.component';
@@ -29,7 +30,8 @@ import { removeNgStyles, createNewHosts } from '@angularclass/hmr';
     HeaderComponent,
   ],
   providers: [
-    ApiService
+    ApiService,
+    AuthService
   ],
   bootstrap: [AppComponent]
 })
