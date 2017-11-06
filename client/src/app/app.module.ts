@@ -1,15 +1,17 @@
-import { AuthService } from './auth/auth.service';
-import { HeaderComponent } from './header/header.component';
-import { SigninComponent } from './auth/signin.component';
-import { SignupComponent } from './auth/signup.component';
+import { AboutComponent } from './pages/about/about.component';
+import { AuthComponent } from './components/auth/auth.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
+import { AuthService } from './_services/auth.service';
+import { SigninComponent } from './components/auth/login/signin.component';
+import { SignupComponent } from './components/auth/register/signup.component';
 import { NgModule, ApplicationRef } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpModule } from '@angular/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
-import { HomeComponent } from './home/home.component';
-import { ApiService } from './shared';
+import { HomeComponent } from './components/home/home.component';
+import { ApiService } from './_services';
 import { routing } from './app.routing';
 
 import { removeNgStyles, createNewHosts } from '@angularclass/hmr';
@@ -27,7 +29,9 @@ import { removeNgStyles, createNewHosts } from '@angularclass/hmr';
     HomeComponent,
     SignupComponent,
     SigninComponent,
-    HeaderComponent,
+    NavbarComponent,
+    AuthComponent,
+    AboutComponent
   ],
   providers: [
     ApiService,

@@ -1,7 +1,7 @@
-import { User } from './user.model';
+import { User } from '../../../_models/user.model';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from './auth.service';
+import { AuthService } from '../../../_services/auth.service';
 
 @Component({
     selector: 'app-signup',
@@ -12,6 +12,9 @@ export class SignupComponent implements OnInit {
 
     constructor(private authService: AuthService) { }
     myForm: FormGroup;
+
+    messageClass: string;
+    message: string;
 
     // Subscribe user to signup service
     onSubmit() {
@@ -24,8 +27,16 @@ export class SignupComponent implements OnInit {
         );
         this.authService.signup(user)
             .subscribe(
-            data => console.log(data),
-            error => console.error(error)
+                data => {
+                    if(!data.success){
+                        this.messageClass = 'alert alert-danger',
+                        this.message = 'Some warning message from the server'
+                    } else {
+                        
+                        this.messageClass = 'alert alert-success',
+                        this.message = 'Some good successful message from the server'
+                    } 
+                },
             );
         this.myForm.reset();
     }

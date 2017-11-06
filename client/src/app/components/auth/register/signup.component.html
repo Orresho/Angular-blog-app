@@ -1,4 +1,15 @@
+
+<div class="row show-hide-message">
+    <div [ngClass]="messageClass">
+        {{message}}
+    </div>
+</div>
+
 <div class="col-md-8 col-md-offset-2">
+    <br>
+    <h1 style="text-align: center;">Register</h1>
+    <hr>
+    <br>
     <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
         <div class="form-group">
             <label for="firstName">First Name</label>

@@ -1,67 +1,97 @@
 var express = require('express');
 var router = express.Router();
-var bcrypt = require('bcryptjs');
-var jwt = require('jsonwebtoken');
-
+var _ = require('lodash');
 var User = require('../model/user');
+var bcrypt = require('bcryptjs');
 
-// Signup
-router.post('/', function (req, res, next) {
-    // Get user information from inputs and store in user object
-    var user = new User({
-        userName: req.body.userName,
-        password: bcrypt.hashSync(req.body.password, 10),
-        email: req.body.email,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName
-    });
-    user.save(function (err, result) {
-        if (err) {
-            return res.status(500).json({
-                title: 'An error occurred posting',
-                error: err
-            });
-        }
-        res.status(201).json({
-            message: 'User created',
-            obj: result
-        });
-    });
-});
-
-
-//Signin
-router.post('/signin', function (req, res, next) {
+// Authenticate
+router.post('/authenticate', function (req, res, next) {
     User.findOne({ email: req.body.email }, function (err, user) {
         if (err) {
             return res.status(500).json({
-                title: 'An error occured',
+                title: 'An error occurred',
                 error: err
             });
         }
         if (!user) {
             return res.status(401).json({
-                title: 'Login failed',
-                error: { message: 'invalid Login credentials' }
+                title: 'Login failed - user failed',
+                error: { message: 'Invalid login credentials' }
             });
         }
         if (!bcrypt.compareSync(req.body.password, user.password)) {
             return res.status(401).json({
-                title: 'Login failed',
-                error: { message: 'invalid Login credentials' }
+                title: 'Login failed - password failed',
+                error: { message: 'Invalid login credentials' }
             });
         }
         var token = jwt.sign({ user: user }, 'secret', { expiresIn: 7200 });
         res.status(200).json({
-            message: 'succesfully logged in',
+            message: 'Successfully logged in',
             token: token,
             userId: user._id
         });
     });
 });
 
+// Register
+router.post('/register', function (req, res, next) {
+ // Check if email was provided
+ if (!req.body.email) {
+    res.json({ success: false, message: 'You must provide an e-mail' }); // Return error
+  } else {
+    // Check if username was provided
+    if (!req.body.username) {
+      res.json({ success: false, message: 'You must provide a username' }); // Return error
+    } else {
+      // Check if password was provided
+      if (!req.body.password) {
+        res.json({ success: false, message: 'You must provide a password' }); // Return error
+      } else {
+        // Create new user object and apply user input
+        let user = new User({
+            username: req.body.username.toLowerCase(),
+            email: req.body.email.toLowerCase(),
+            password: bcrypt.hashSync(req.body.password, 10)
+        });
+        // Save user to database
+        user.save((err) => {
+          // Check if error occured
+          if (err) {
+            // Check if error is an error indicating duplicate account
+            
+              // Check if error is a validation rror
+              if (err.errors) {
+                // Check if validation error is in the email field
+                if (err.errors.email) {
+                  res.json({ success: false, message: 'An error occured' }); // Return error
+                } else {
+                  // Check if validation error is in the username field
+                  if (err.errors.username) {
+                    res.json({ success: false, message: 'An error occured' }); // Return error
+                  } else {
+                    // Check if validation error is in the password field
+                    if (err.errors.password) {
+                      res.json({ success: false, message: err.errors.password.message }); // Return error
+                    } else {
+                      res.json({ success: false, message: err }); // Return any other error not already covered
+                    }
+                  }
+                }
+              } else {
+                res.json({ success: false, message: 'Could not save user. Error: ', err }); // Return error if not related to validation
+              }
+          } else {
+            res.json({ success: true, message: 'Acount registered!' }); // Return success
+          }
+        });
+      }
+    }
+  }
+});
 
-/* GET users listing. */
+
+/* GET users api*/
 router.get('/', function (req, res, next) {
     User.find()
         .exec(function (err, events) {
@@ -78,8 +108,6 @@ router.get('/', function (req, res, next) {
             });
         });
 });
-
-
 
 
 module.exports = router;

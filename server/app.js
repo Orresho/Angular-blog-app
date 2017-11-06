@@ -5,7 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var cors = require('cors')
-var mongoose = require('./config/mongoose');
+var mongooseConnect = require('./config/mongoose');
 
 var indexRoutes = require('./routes/index');
 var userRoutes = require('./routes/users');
@@ -13,8 +13,7 @@ var userRoutes = require('./routes/users');
 var app = express();
 
 // Connect to mongo
-mongoName = 'trade-app'
-mongoose(mongoName);
+mongooseConnect();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

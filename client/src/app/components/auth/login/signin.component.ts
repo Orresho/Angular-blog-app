@@ -1,8 +1,8 @@
 import { Router } from '@angular/router';
-import { AuthService } from './auth.service';
+import { AuthService } from '../../../_services/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
-import { User } from './user.model';
+import { User } from '../../../_models/user.model';
 
 @Component({
     selector: 'app-signup',
@@ -25,7 +25,7 @@ export class SigninComponent implements OnInit{
     }
 
     // Signing in
-    onSubmit(){
+    onSubmit() {
         const user = new User(this.myForm.value.email, this.myForm.value.password);
         this.authService.signin(user)
             .subscribe(
