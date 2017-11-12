@@ -1,4 +1,6 @@
-import { FormGroup,  Validators, FormBuilder } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from './../../../_services/auth.service';
+import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { Component } from '@angular/core';
 
 @Component({
@@ -15,7 +17,8 @@ export class SignupComponent {
 
     constructor(
         private formBuilder: FormBuilder,
-
+        private authService: AuthService,
+        private router: Router
     ) {
         this.createForm();
     }
@@ -100,6 +103,29 @@ export class SignupComponent {
 
     // Function to submit form
     onRegisterSubmit() {
-        console.log(this.form);
+        console.log(this.form.get('email').value);
+        console.log(this.form.get('username').value);
+        const user = {
+            email: this.form.get('email').value,
+            username: this.form.get('username').value,
+            password: this.form.get('password').value,
+        }
+        this.authService.signup(user).subscribe(data => {
+            if (!data.success) {
+                this.messageClass = 'alert alert-danger';
+                this.message = data.message;
+            } else {
+                this.messageClass = 'alert alert-success';
+                this.message = data.message;
+                setTimeout(() => {
+                    this.router.navigate(['/home']);
+                },1500)
+            }
+        });
+        this.form.reset();
+
+
+
+
     }
 }

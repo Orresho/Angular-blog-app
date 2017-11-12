@@ -1,8 +1,7 @@
-import { Router } from '@angular/router';
-import { AuthService } from '../../../_services/auth.service';
+// import { Router } from '@angular/router';
+// import { AuthService } from '../../../_services/auth.service';
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, Validators, FormControl } from '@angular/forms';
-import { User } from '../../../_models/user.model';
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 
 @Component({
     selector: 'app-signup',
@@ -11,31 +10,33 @@ import { User } from '../../../_models/user.model';
 
 
 export class SigninComponent implements OnInit{
-    myForm: FormGroup;
+    form: FormGroup;
 
-    constructor(private authService: AuthService, private router: Router){}
+    messageClass;
+    message;
+
+    constructor(
+        // private authService: AuthService, 
+        // private router: Router, 
+        private formBuilder: FormBuilder){}
 
     ngOnInit() {
-        this.myForm = new FormGroup({
-            email: new FormControl(null, [
-                Validators.required,
-            ]),
-            password: new FormControl(null, Validators.required)
+    }
+
+
+    createForm(){
+        this.form = this.formBuilder.group({
+            username: ['', Validators.required],
+            password: ['', Validators.required]
         });
     }
 
     // Signing in
-    onSubmit() {
-        const user = new User(this.myForm.value.email, this.myForm.value.password);
-        this.authService.signin(user)
-            .subscribe(
-                data => {
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('userId', data.userId);
-                    this.router.navigateByUrl('/');
-                },
-                error => console.error(error)
-            );
-        this.myForm.reset();
+    onLoginSubmit() {
+        const user = {
+            username: this.form.get('username').value,
+            password: this.form.get('password').value,
+        }
+        console.log(user);
     }
 }

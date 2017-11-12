@@ -64,12 +64,12 @@ router.post('/register', function (req, res, next) {
 						if (err.errors) {
 							// Check if validation error is in the email field
 							if (err.errors.email) {
-								res.json({ success: false, message: err.errors.email.message }); // Return error
+								res.json({ success: false, message: 'An error occured, email or username is already taken' }); // Return error
 								console.log('email error');
 							} else {
 								// Check if validation error is in the username field
 								if (err.errors.username) {
-									res.json({ success: false, message: err.errors.username.message }); // Return error
+									res.json({ success: false, message: 'An error occured, username or email is already taken' }); // Return error
 									console.log('username error');
 								
 								} else {

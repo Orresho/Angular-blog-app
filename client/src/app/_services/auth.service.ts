@@ -8,11 +8,11 @@ import { Observable } from 'rxjs/Observable';
 export class AuthService {
     constructor(private http: Http) { }
 
-    signup(user: User) {
-        const body = JSON.stringify(user);
-        console.log(user)
-        const headers = new Headers({ 'Content-Type': 'application/json' });
-        return this.http.post('http://localhost:3000/user/register', body, { headers: headers })
+    signup(user) {
+        // const body = JSON.stringify(user);
+        // console.log(user)
+        // const headers = new Headers({ 'Content-Type': 'application/json' });
+        return this.http.post('http://localhost:3000/user/register', user)
             .map((response: Response) => response.json())
             .catch((error: Response) => Observable.throw(error.json()));
     }
