@@ -14,6 +14,13 @@ export class SignupComponent {
 
     messageClass: string;
     message: string;
+    processing = false;
+
+    // Instant validation
+    emailValid;
+    emailMessage;
+    usernameValid;
+    usernameMessage;
 
     constructor(
         private formBuilder: FormBuilder,
@@ -51,6 +58,22 @@ export class SignupComponent {
             // Confirm Password Input
             confirm: ['', Validators.required] // Field is required
         }, { validator: this.matchingPasswords('password', 'confirm') }); // Add custom validator to form for matching passwords
+    }
+
+
+    disableForm(){
+        this.form.controls['email'].disable();
+        this.form.controls['username'].disable();
+        this.form.controls['password'].disable();
+        this.form.controls['confirm'].disable();
+        
+    }
+
+    enableForm(){
+        this.form.controls['email'].enable();
+        this.form.controls['username'].enable();
+        this.form.controls['password'].enable();
+        this.form.controls['confirm'].enable();
     }
 
     // Function to validate e-mail is proper format
@@ -94,7 +117,7 @@ export class SignupComponent {
         return (group: FormGroup) => {
             // Check if both fields are the same
             if (group.controls[password].value === group.controls[confirm].value) {
-                return false; // Return as a match
+                return null; // Return as a match
             } else {
                 return { 'matchingPasswords': true } // Return as error: do not match
             }
@@ -103,6 +126,8 @@ export class SignupComponent {
 
     // Function to submit form
     onRegisterSubmit() {
+        this.processing = true;
+        this.disableForm();
         console.log(this.form.get('email').value);
         console.log(this.form.get('username').value);
         const user = {
@@ -114,18 +139,42 @@ export class SignupComponent {
             if (!data.success) {
                 this.messageClass = 'alert alert-danger';
                 this.message = data.message;
+                this.processing = false;
+                this.enableForm();
             } else {
                 this.messageClass = 'alert alert-success';
                 this.message = data.message;
                 setTimeout(() => {
                     this.router.navigate(['/home']);
-                },1500)
+                }, 1500)
             }
         });
         this.form.reset();
-
-
-
-
     }
+
+    // checkUsername(){
+    //     const username = this.form.get('username').value;
+    //     this.authService.checkUsername(username).subscribe(data => {
+    //         if (!data.success) {
+    //             this.usernameValid = false;
+    //             this.usernameMessage = data.message;
+    //         } else {
+    //             this.usernameValid = true;
+    //             this.usernameMessage = data.message;
+    //         }
+    //     });
+    // }
+
+    // checkEmail(){
+    //     const email = this.form.get('email').value;
+    //     this.authService.checkUsername(email).subscribe(data => {
+    //         if (!data.success) {
+    //             this.emailValid = false;
+    //             this.emailMessage = data.message;
+    //         } else {
+    //             this.emailValid = true;
+    //             this.emailMessage = data.message;
+    //         }
+    //     });
+    // }
 }

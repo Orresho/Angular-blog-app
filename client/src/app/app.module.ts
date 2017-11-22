@@ -1,17 +1,22 @@
+import { AuthService } from './_services/auth.service';
+import { BlogService } from './_services/blog.service';
+import { BlogComponent } from './components/blog/blog.component';
+import { NotAuthGuard } from './_guards/notAuth.guard';
+import { AuthGuard } from './_guards/auth.guard';
+import { ProfileComponent } from './components/profile/profile.component';
 import { HttpModule } from '@angular/http';
 import { AboutComponent } from './pages/about/about.component';
 import { AuthComponent } from './components/auth/auth.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
-import { AuthService } from './_services/auth.service';
 import { SigninComponent } from './components/auth/login/signin.component';
 import { SignupComponent } from './components/auth/register/signup.component';
 import { NgModule, ApplicationRef } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
+import { FlashMessagesModule } from 'angular2-flash-messages';
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './components/home/home.component';
-import { ApiService } from './_services';
 import { routing } from './app.routing';
 
 import { removeNgStyles, createNewHosts } from '@angularclass/hmr';
@@ -22,6 +27,7 @@ import { removeNgStyles, createNewHosts } from '@angularclass/hmr';
     routing,
     ReactiveFormsModule,
     HttpModule,
+    FlashMessagesModule
   ],
   declarations: [
     AppComponent,
@@ -30,10 +36,14 @@ import { removeNgStyles, createNewHosts } from '@angularclass/hmr';
     SigninComponent,
     NavbarComponent,
     AuthComponent,
-    AboutComponent
+    AboutComponent,
+    ProfileComponent,
+    BlogComponent
   ],
   providers: [
-    ApiService,
+    AuthGuard,
+    NotAuthGuard,
+    BlogService,
     AuthService
   ],
   bootstrap: [AppComponent]

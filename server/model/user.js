@@ -150,7 +150,7 @@ userSchema.pre('save', function (next) {
 });
 
 // Match up encrypted password (for logging in)
-userSchema.methods.comparePassword = (password) => {
+userSchema.methods.comparePassword = function(password) {
     return bcrypt.compareSync(password, this.password);
 }
 

@@ -3,36 +3,37 @@ var router = express.Router();
 var _ = require('lodash');
 var User = require('../model/user');
 var bcrypt = require('bcryptjs');
+var jwt = require('jsonwebtoken');
+var config = require('../config/database');
 
 // Authenticate
-router.post('/authenticate', function (req, res, next) {
-	User.findOne({ email: req.body.email }, function (err, user) {
-		if (err) {
-			return res.status(500).json({
-				title: 'An error occurred',
-				error: err
-			});
+router.post('/login', function (req, res, next) {
+	if (!req.body.username) {
+		res.json({ success: false, message: 'Username required' });
+	} else {
+		if (!req.body.password) {
+			res.json({ success: false, message: 'Password required' });
 		}
-		if (!user) {
-			return res.status(401).json({
-				title: 'Login failed - user failed',
-				error: { message: 'Invalid login credentials' }
-			});
-		}
-		if (!bcrypt.compareSync(req.body.password, user.password)) {
-			return res.status(401).json({
-				title: 'Login failed - password failed',
-				error: { message: 'Invalid login credentials' }
-			});
-		}
-		var token = jwt.sign({ user: user }, 'secret', { expiresIn: 7200 });
-		res.status(200).json({
-			message: 'Successfully logged in',
-			token: token,
-			userId: user._id
+		User.findOne({ username: req.body.username.toLowerCase() }, (err, user) => {
+			if (err) {
+				res.json({ success: false, message: err });
+			} else {
+				if (!user) {
+					res.json({ success: false, message: 'An error occured' });
+				} else {
+					const validPassword = user.comparePassword(req.body.password);
+					if (!validPassword) {
+						res.json({ success: false, message: 'An error occured' });
+					} else {
+						const token = jwt.sign({ userId: user._id }, config.secret, { expiresIn: '24h' });
+						res.json({ success: true, message: 'Success!', token: token, user: { username: user.username } });
+					}
+				}
+			}
 		});
-	});
+	}
 });
+
 
 // Register
 router.post('/register', function (req, res, next) {
@@ -71,7 +72,7 @@ router.post('/register', function (req, res, next) {
 								if (err.errors.username) {
 									res.json({ success: false, message: 'An error occured, username or email is already taken' }); // Return error
 									console.log('username error');
-								
+
 								} else {
 									// Check if validation error is in the password field
 									if (err.errors.password) {
@@ -94,22 +95,35 @@ router.post('/register', function (req, res, next) {
 });
 
 
-/* GET users api*/
-router.get('/', function (req, res, next) {
-	User.find()
-		.exec(function (err, events) {
+router.use((req, res, next) => {
+	const token = req.headers['authorization'];
+	if (!token) {
+		res.json({ success: false, message: 'No token provided' });
+	} else {
+		jwt.verify(token, config.secret, (err, decoded) => {
 			if (err) {
-				return res.status(500).json({
-					title: 'An error occured getting',
-					error: err
-				});
+				res.json({ success: false, message: 'token invalid: ' + err })
+			} else {
+				req.decoded = decoded
+				next();
 			}
-			console.log(events);
-			res.status(200).json({
-				message: 'Success',
-				obj: events
-			});
 		});
+	}
+});
+
+router.get('/profile', (req, res) => {
+	User.findOne({ _id: req.decoded.userId }).select('username email').exec((err, user) => {
+		if (err) {
+			res.json({ success: false, message: err });
+		} else {
+			if (!user) {
+				res.json({ success: false, message: 'User not found' });
+			} else {
+				res.json({ success: true, user: user });
+			}
+		}
+
+	});
 });
 
 

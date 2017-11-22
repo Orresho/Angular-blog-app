@@ -9,6 +9,7 @@ var mongooseConnect = require('./config/mongoose');
 
 var indexRoutes = require('./routes/index');
 var userRoutes = require('./routes/users');
+var blogRoutes = require('./routes/blogs');
 
 var app = express();
 
@@ -31,6 +32,7 @@ app.use(cors());
 
 // Middleware
 app.use('/user', userRoutes);
+app.use('/blog', blogRoutes);
 app.use('/', indexRoutes);
 
 // catch 404 and forward to error handler
